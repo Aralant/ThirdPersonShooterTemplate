@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "GP_HUD.generated.h"
 
+enum class EWeaponSlot : uint8;
 class UGP_WeaponWidget;
 class AGP_BaseWeapon;
 class UGP_HUDWidget;
@@ -49,10 +50,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowInventoryWidget(bool bIsShow);
 	bool InteractWithInventory(AActor* InteractActor);
-	void BindToWeapon(AGP_BaseWeapon* Weapon);
+	void BindToWeapon(AGP_BaseWeapon* Weapon, EWeaponSlot ChangedSlot);
 	UFUNCTION()
 	UGP_HUDWidget* GetHUDWidget(){return HUDWidget;};
 protected:
 	UFUNCTION()
-	void HandleWeaponPickUp(AGP_BaseWeapon* PickedUpWeapon);
+	void HandleWeaponPickUp(AGP_BaseWeapon* PickedUpWeapon, EWeaponSlot ChangedSlot);
 };

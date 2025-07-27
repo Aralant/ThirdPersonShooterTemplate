@@ -12,7 +12,7 @@ enum class EWeaponSlot : uint8;
 class UInteractableSphereComponent;
 class USphereComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponPickUp, AGP_BaseWeapon*, PickupedWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponPickUp, AGP_BaseWeapon*, PickupedWeapon, EWeaponSlot, EquipedSlot);
 
 UCLASS()
 class UE_CPP_GLEB_PROJECT_API AGP_BaseWeapon : public AActor
@@ -85,6 +85,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void AttachToActor(AActor* Actor);
+
+	UFUNCTION()
+	void DropWeapon();
 	
 	UFUNCTION(BlueprintCallable)
 	FString GetName(){return WeaponName;}

@@ -97,7 +97,7 @@ public:
 	void HideMeleeWeapon(AGP_BaseWeapon* Weapon);
 
 	UFUNCTION(BlueprintCallable)
-	EWeaponSlot GetEmptyWeaponSlot();
+	EWeaponSlot GetEmptyWeaponSlot(AGP_BaseWeapon* Weapon);
 
 	UFUNCTION(BlueprintCallable)
 	void EquipRangeWeapon(AGP_BaseWeapon* Weapon, USkeletalMeshComponent* CharacterMesh);

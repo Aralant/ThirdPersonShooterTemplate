@@ -102,7 +102,7 @@ bool AGP_HUD::InteractWithInventory(AActor* InteractActor)
 	return false;
 }
 
-void AGP_HUD::BindToWeapon(AGP_BaseWeapon* Weapon)
+void AGP_HUD::BindToWeapon(AGP_BaseWeapon* Weapon, EWeaponSlot ChangedSlot)
 {
 	if (Weapon)
 	{
@@ -110,32 +110,32 @@ void AGP_HUD::BindToWeapon(AGP_BaseWeapon* Weapon)
 	}
 }
 
-void AGP_HUD::HandleWeaponPickUp(AGP_BaseWeapon* PickedUpWeapon)
+void AGP_HUD::HandleWeaponPickUp(AGP_BaseWeapon* PickedUpWeapon, EWeaponSlot ChangedSlot)
 {
 	if (HUDWidget)
 	{
 		if (PickedUpWeapon->ActorHasTag("RangeWeapon"))
 		{
-			if (!HUDWidget->FirstWeaponWidgetSlot->Weapon)
+			switch (ChangedSlot)
 			{
-				HUDWidget->FirstWeaponWidgetSlot->Weapon = PickedUpWeapon;
+			case EWeaponSlot::Primary:
+				HUDWidget->FirstWeaponWidgetSlot->Weapon = nullptr;
 				HUDWidget->FirstWeaponWidgetSlot->SynchronizeProperties();
-				return;
-			}
-			if (!HUDWidget->SecondWeaponWidgetSlot->Weapon)
-			{
-				HUDWidget->SecondWeaponWidgetSlot->Weapon = PickedUpWeapon;
+				HUDWidget->FirstWeaponWidgetSlot->Weapon = PickedUpWeapon;
+				HUDWidget->SynchronizeProperties();
+				break;
+			case EWeaponSlot::Secondary:
+				HUDWidget->SecondWeaponWidgetSlot->Weapon = nullptr;
 				HUDWidget->SecondWeaponWidgetSlot->SynchronizeProperties();
-				return;
+				HUDWidget->SecondWeaponWidgetSlot->Weapon = PickedUpWeapon;
+				HUDWidget->SynchronizeProperties();
+				break;
 			}
 		}
 		if (PickedUpWeapon->ActorHasTag("MeleeWeapon"))
 		{
-			if (!HUDWidget->MeleeWeaponWidgetSlot->Weapon)
-			{
 				HUDWidget->MeleeWeaponWidgetSlot->Weapon = PickedUpWeapon;
 				HUDWidget->MeleeWeaponWidgetSlot->SynchronizeProperties();
-			}
 		}
 	}
 }

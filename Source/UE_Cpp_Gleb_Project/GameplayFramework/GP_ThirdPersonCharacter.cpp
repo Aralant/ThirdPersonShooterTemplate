@@ -116,27 +116,40 @@ void AGP_ThirdPersonCharacter::HideMeleeWeapon(AGP_BaseWeapon* Weapon)
 	SetMeleeWeapon(Weapon);
 }
 
-EWeaponSlot AGP_ThirdPersonCharacter::GetEmptyWeaponSlot()
+EWeaponSlot AGP_ThirdPersonCharacter::GetEmptyWeaponSlot(AGP_BaseWeapon* Weapon)
 {
-	for (TPair<EWeaponSlot, bool>& Pair : WeaponSlotMap)
+	if (Weapon->ActorHasTag("RangeWeapon"))
 	{
-		if (!Pair.Value)
+		if (WeaponSlotMap[EWeaponSlot::Primary] && WeaponSlotMap[EWeaponSlot::Secondary])
 		{
-			return Pair.Key;
+			return EWeaponSlot::None;
 		}
+		if (WeaponSlotMap[EWeaponSlot::Primary] && !WeaponSlotMap[EWeaponSlot::Secondary])
+		{
+			return EWeaponSlot::Secondary;
+		}
+		if (!WeaponSlotMap[EWeaponSlot::Primary])
+		{
+			return EWeaponSlot::Primary;
+		}
+	}
+	if (Weapon->ActorHasTag("MeleeWeapon"))
+	{
+		return EWeaponSlot::Melee;
 	}
 	return EWeaponSlot::None;
 }
 
 void AGP_ThirdPersonCharacter::EquipRangeWeapon(AGP_BaseWeapon* Weapon, USkeletalMeshComponent* CharacterMesh)
 {
-	EWeaponSlot EmptyWeaponSlot = GetEmptyWeaponSlot();
+	EWeaponSlot EmptyWeaponSlot = GetEmptyWeaponSlot(Weapon);
 	EWeaponSlot ChangedWeaponSlot;
 	switch (EmptyWeaponSlot)
 	{
 	case EWeaponSlot::None:
 		ChangedWeaponSlot = CurrentWeapon->GetWeaponSlot();
 		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentWeapon->DropWeapon();
 		WeaponSlotMap[ChangedWeaponSlot] = false;
 		//drop current Weapon()
 		Weapon->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
@@ -184,6 +197,7 @@ void AGP_ThirdPersonCharacter::EquipMeleeWeapon(AGP_BaseWeapon* Weapon, USkeleta
 	{
 		EWeaponSlot ChangedWeaponSlot = MeleeWeapon->GetWeaponSlot();
 		MeleeWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		MeleeWeapon->DropWeapon();
 		WeaponSlotMap[EWeaponSlot::Melee] = false;
 		//drop current Weapon()
 		Weapon->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponKnifeSocket"));
@@ -203,7 +217,15 @@ void AGP_ThirdPersonCharacter::EquipWeapon(AGP_BaseWeapon* Weapon)
 			if (MyPC)
 			{
 				AGP_HUD* GP_HUD = Cast<AGP_HUD>(MyPC->GetHUD());
-				GP_HUD->BindToWeapon(Weapon);
+				if (CurrentWeapon)
+				{
+					GP_HUD->BindToWeapon(Weapon, CurrentWeapon->GetWeaponSlot());
+				}
+				else
+				{
+					GP_HUD->BindToWeapon(Weapon, GetEmptyWeaponSlot(Weapon));
+				}
+				
 			}
 		}
 		//SetWeapon(Weapon);

@@ -23,7 +23,7 @@ AGP_BaseWeapon::AGP_BaseWeapon()
 
 	WeaponPickUpComponent = CreateDefaultSubobject<UInteractableSphereComponent>(TEXT("PickupSphere"));
 	WeaponPickUpComponent->SetupAttachment(RootComponent);
-	WeaponPickUpComponent->SetSphereRadius(100.f);
+	WeaponPickUpComponent->SetSphereRadius(50.f);
 	WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
@@ -132,13 +132,26 @@ void AGP_BaseWeapon::AttachToActor(AActor* Actor)
 	if (WeaponUser)
 	{
 		WeaponUser->EquipWeapon(this);
-		OnWeaponPickUp.Broadcast(this);
+		OnWeaponPickUp.Broadcast(this, WeaponSlot);
 		WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		UE_LOG(LogTemp, Warning, TEXT("Оружие подобрано"));
 	}
 
+}
+
+void AGP_BaseWeapon::DropWeapon()
+{
+	this->CurrentOwner = nullptr;
+	WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponPickUpComponent->SetCollisionObjectType(ECC_WorldDynamic);
+	WeaponPickUpComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
+	
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	WeaponMesh->SetCollisionObjectType(ECC_WorldDynamic);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	UE_LOG(LogTemp, Warning, TEXT("Оружие сброшено"));
 }
 
 void AGP_BaseWeapon::TryToAttach(AActor* InteractActor)

@@ -4,6 +4,7 @@
 #include "GP_RangeWeapon.h"
 
 #include "HeadMountedDisplayTypes.h"
+#include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "UE_Cpp_Gleb_Project/GameplayFramework/GP_ThirdPersonCharacter.h"
 
@@ -70,7 +71,8 @@ void AGP_RangeWeapon::PromoteShoot()
 		}
 		FVector FinalTracePoint = bHit ? Hit.ImpactPoint : TraceEnd;
 		DrawDebugLine(GetWorld(), CameraLocation, FinalTracePoint, FColor::Green, false, 5.0f);
-		DrawDebugLine(GetWorld(), GetActorLocation(), FinalTracePoint, FColor::Purple, false, 5.0f);
+		FVector MuzzleLocation = GetWeaponMesh()->GetSocketLocation(FName("Muzzle"));
+		DrawDebugLine(GetWorld(), MuzzleLocation, FinalTracePoint, FColor::Purple, false, 5.0f);
 		if (Hit.GetActor() && Hit.GetActor()->CanBeDamaged())
 		{
 			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, nullptr, this, nullptr);
