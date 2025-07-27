@@ -55,33 +55,35 @@ void AGP_RangeWeapon::PromoteShoot()
 	if (Controller)
 	{
 		Controller->GetPlayerViewPoint(CameraLocation, CameraRotation);
-	
-		FVector TraceEnd = CameraLocation + (CameraRotation.Vector() * 5000.0f);
-		FHitResult Hit;
-		FCollisionQueryParams TraceParams;
-		TraceParams.AddIgnoredActor(this);
-		TraceParams.AddIgnoredActor(CurrentOwner);
-		bool bHit = GetWorld()->LineTraceSingleByChannel(
-			Hit, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
-		if (bHit && Hit.GetActor())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *Hit.GetActor()->GetName());
-			UE_LOG(LogTemp, Warning, TEXT("Component: %s"), *Hit.GetComponent()->GetName());
-			UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *Hit.ImpactPoint.ToString());
-		}
-		FVector FinalTracePoint = bHit ? Hit.ImpactPoint : TraceEnd;
-		DrawDebugLine(GetWorld(), CameraLocation, FinalTracePoint, FColor::Green, false, 5.0f);
 		FVector MuzzleLocation = GetWeaponMesh()->GetSocketLocation(FName("Muzzle"));
-		DrawDebugLine(GetWorld(), MuzzleLocation, FinalTracePoint, FColor::Purple, false, 5.0f);
-		if (Hit.GetActor() && Hit.GetActor()->CanBeDamaged())
+		float SpreadAngleRad = FMath::DegreesToRadians(SpreadAngle);
+		if (BulletsPerShot > 0)
 		{
-			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, nullptr, this, nullptr);
+			for (int i = 0; i < BulletsPerShot; i++)
+			{
+				FVector ShootDirection = FMath::VRandCone(CameraRotation.Vector(), SpreadAngleRad);
+				FVector TraceEnd = CameraLocation + ShootDirection * 5000.0f;
+				FHitResult Hit;
+				FCollisionQueryParams TraceParams;
+				TraceParams.AddIgnoredActor(this);
+				TraceParams.AddIgnoredActor(CurrentOwner);
+				bool bHit = GetWorld()->LineTraceSingleByChannel(
+					Hit, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
+				FVector FinalTracePoint = bHit ? Hit.ImpactPoint : TraceEnd;
+				DrawDebugLine(GetWorld(), CameraLocation, FinalTracePoint, FColor::Green, false, 1.0f);
+				DrawDebugLine(GetWorld(), MuzzleLocation, FinalTracePoint, FColor::Purple, false, 1.0f);
+				if (Hit.GetActor() && Hit.GetActor()->CanBeDamaged())
+				{
+					UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, nullptr, this, nullptr);
+				}
+				else
+				{
+					//Add decal
+					UE_LOG(LogTemp, Display, TEXT("print decal"))
+				}
+			}
 		}
-		else
-		{
-			//Add decal
-			UE_LOG(LogTemp, Display, TEXT("print decal"))
-		}
+		
 	}
 	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5, FColor::Magenta, FString(TEXT("Shoot")));
 	//UE_LOG(LogTemp, Display, TEXT("Shoot"))

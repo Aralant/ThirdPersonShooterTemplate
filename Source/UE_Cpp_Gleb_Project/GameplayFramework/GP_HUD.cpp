@@ -106,7 +106,10 @@ void AGP_HUD::BindToWeapon(AGP_BaseWeapon* Weapon, EWeaponSlot ChangedSlot)
 {
 	if (Weapon)
 	{
-		Weapon->OnWeaponPickUp.AddDynamic(this, &AGP_HUD::HandleWeaponPickUp);
+		if (!Weapon->OnWeaponPickUp.IsBound())
+		{
+			Weapon->OnWeaponPickUp.AddDynamic(this, &AGP_HUD::HandleWeaponPickUp);
+		}
 	}
 }
 

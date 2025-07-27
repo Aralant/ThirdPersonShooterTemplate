@@ -144,6 +144,10 @@ void AGP_BaseWeapon::AttachToActor(AActor* Actor)
 void AGP_BaseWeapon::DropWeapon()
 {
 	this->CurrentOwner = nullptr;
+	this->SetActorRotation(FRotator(0, 0, 0));
+	FVector NewLocation = this->GetActorLocation();
+	NewLocation.Z = 70.0f;
+	this->SetActorLocation(NewLocation);
 	WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	WeaponPickUpComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	WeaponPickUpComponent->SetCollisionResponseToAllChannels(ECR_Overlap);

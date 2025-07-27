@@ -21,19 +21,32 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	int TotalAmmo = 0;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	int CurrentAmmo = 0;
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	int MaxAmmoInClip = 0;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	float ReloadTime = 0.f;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	bool bIsReloading = false;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	bool bIsAmmoEmpty =  false;
+	
+	UPROPERTY(EditAnywhere, Category="Weapon characteristics")
+	int32 BulletsPerShot = 1;
+	
+	UPROPERTY(EditAnywhere, Category="Weapon characteristics")
+	float SpreadAngle = 1.0f;
+	
 	virtual bool CanAttack() const override;
+	
 	virtual void PromoteShoot();
 	
 #pragma region ReloadableInterface
