@@ -45,48 +45,15 @@ bool AGP_RangeWeapon::CanAttack() const
 	return true;
 }
 
+void AGP_RangeWeapon::InternalPromoteShoot()
+{
+	PromoteDamageTrace(SpreadAngle);
+}
+
 void AGP_RangeWeapon::PromoteShoot()
 {
 	SetCurrentAmmo(CurrentAmmo - 1);
-	AActor* Actor = GetOwner();
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	AController* Controller = CurrentOwner->GetInstigatorController();
-	if (Controller)
-	{
-		Controller->GetPlayerViewPoint(CameraLocation, CameraRotation);
-		FVector MuzzleLocation = GetWeaponMesh()->GetSocketLocation(FName("Muzzle"));
-		float SpreadAngleRad = FMath::DegreesToRadians(SpreadAngle);
-		if (BulletsPerShot > 0)
-		{
-			for (int i = 0; i < BulletsPerShot; i++)
-			{
-				FVector ShootDirection = FMath::VRandCone(CameraRotation.Vector(), SpreadAngleRad);
-				FVector TraceEnd = CameraLocation + ShootDirection * 5000.0f;
-				FHitResult Hit;
-				FCollisionQueryParams TraceParams;
-				TraceParams.AddIgnoredActor(this);
-				TraceParams.AddIgnoredActor(CurrentOwner);
-				bool bHit = GetWorld()->LineTraceSingleByChannel(
-					Hit, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
-				FVector FinalTracePoint = bHit ? Hit.ImpactPoint : TraceEnd;
-				DrawDebugLine(GetWorld(), CameraLocation, FinalTracePoint, FColor::Green, false, 1.0f);
-				DrawDebugLine(GetWorld(), MuzzleLocation, FinalTracePoint, FColor::Purple, false, 1.0f);
-				if (Hit.GetActor() && Hit.GetActor()->CanBeDamaged())
-				{
-					UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, nullptr, this, nullptr);
-				}
-				else
-				{
-					//Add decal
-					UE_LOG(LogTemp, Display, TEXT("print decal"))
-				}
-			}
-		}
-		
-	}
-	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5, FColor::Magenta, FString(TEXT("Shoot")));
-	//UE_LOG(LogTemp, Display, TEXT("Shoot"))
+	InternalPromoteShoot();
 	//иначе пистолет не начинает перезарядку после последнего выстрела
 	if (CurrentAmmo <= 0)
 	{
@@ -158,6 +125,40 @@ void AGP_RangeWeapon::SetCurrentAmmo(int NewCurrentAmmo)
 {
 	CurrentAmmo = FMath::Clamp(NewCurrentAmmo, 0, MaxAmmoInClip);
 	OnChangeAmmo.Broadcast(CurrentAmmo, TotalAmmo);
+}
+
+void AGP_RangeWeapon::PromoteDamageTrace(float SpreadAngleDegrees)
+{
+	AActor* Actor = GetOwner();
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	AController* Controller = CurrentOwner->GetInstigatorController();
+	float SpreadAngleRad = FMath::DegreesToRadians(SpreadAngle);
+	if (Controller)
+	{
+		Controller->GetPlayerViewPoint(CameraLocation, CameraRotation);
+		FVector MuzzleLocation = GetWeaponMesh()->GetSocketLocation(FName("Muzzle"));
+		FVector ShootDirection = FMath::VRandCone(CameraRotation.Vector(), SpreadAngleRad);
+		FVector TraceEnd = CameraLocation + ShootDirection * 5000.0f;
+		FHitResult Hit;
+		FCollisionQueryParams TraceParams;
+		TraceParams.AddIgnoredActor(this);
+		TraceParams.AddIgnoredActor(CurrentOwner);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			Hit, CameraLocation, TraceEnd, ECC_Visibility, TraceParams);
+		FVector FinalTracePoint = bHit ? Hit.ImpactPoint : TraceEnd;
+		DrawDebugLine(GetWorld(), CameraLocation, FinalTracePoint, FColor::Green, false, 1.0f);
+		DrawDebugLine(GetWorld(), MuzzleLocation, FinalTracePoint, FColor::Purple, false, 1.0f);
+		if (Hit.GetActor() && Hit.GetActor()->CanBeDamaged())
+		{
+			UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponDamage, nullptr, this, nullptr);
+		}
+		else
+		{
+			//Add decal
+			UE_LOG(LogTemp, Display, TEXT("print decal"))
+		}
+	}
 }
 
 // Called every frame

@@ -21,11 +21,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	float TotalFuel = 0.0f;
+	float TotalFuel = 10.0f;
 
-	float CurrentFuel = 0.0f;
+	float CurrentFuel = 10.0f;
 
-	float FuelRate = 0.0f;
+	float FuelRate = 0.5f;
 
 	bool bIsFuelEmpty = false;
 

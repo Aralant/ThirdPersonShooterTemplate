@@ -40,14 +40,13 @@ protected:
 	bool bIsAmmoEmpty =  false;
 	
 	UPROPERTY(EditAnywhere, Category="Weapon characteristics")
-	int32 BulletsPerShot = 1;
-	
-	UPROPERTY(EditAnywhere, Category="Weapon characteristics")
 	float SpreadAngle = 1.0f;
 	
 	virtual bool CanAttack() const override;
+
+	virtual void InternalPromoteShoot();
 	
-	virtual void PromoteShoot();
+	void PromoteShoot();
 	
 #pragma region ReloadableInterface
 	virtual void CompleteReload() override;
@@ -61,7 +60,8 @@ protected:
 	
 	virtual void OnPrimaryActionStarted() override;
 	virtual void OnPrimaryActionFinished() override;
-	void SetCurrentAmmo(int NewCurrentAmmo);	
+	void SetCurrentAmmo(int NewCurrentAmmo);
+	void PromoteDamageTrace(float SpreadAngleDegrees);
 public:
 	UFUNCTION()
 	int GetCurrentAmmo(){return CurrentAmmo;};

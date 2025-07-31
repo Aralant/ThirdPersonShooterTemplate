@@ -12,6 +12,7 @@ AGP_Chainsaw::AGP_Chainsaw()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	FireRate = 0.5f;
 }
 
 // Called when the game starts or when spawned
@@ -64,7 +65,7 @@ void AGP_Chainsaw::PromotePrimaryAction()
 		if (!DamagedActor) continue;
 		UGameplayStatics::ApplyDamage(DamagedActor, WeaponDamage, nullptr, this, nullptr);
 	}
-	DrawDebugSphere(GetWorld(), AttackActorLocation, MeleeRange, 16, FColor::Black, false, 1.0f);
+	DrawDebugSphere(GetWorld(), AttackActorLocation, MeleeRange, 16, FColor::Red, false, 1.0f);
 }
 
 // Called every frame
