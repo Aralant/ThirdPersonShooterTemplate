@@ -14,6 +14,7 @@ class UInteractableSphereComponent;
 class USphereComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponPickUp, AGP_BaseWeapon*, PickupedWeapon, EWeaponSlot, EquipedSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponDrop, AGP_BaseWeapon*, DroppedWeapon, EWeaponSlot, EquipedSlot);
 
 UCLASS()
 class UE_CPP_GLEB_PROJECT_API AGP_BaseWeapon : public AActor

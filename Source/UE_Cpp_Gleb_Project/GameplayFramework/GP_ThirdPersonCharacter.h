@@ -104,5 +104,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EquipMeleeWeapon(AGP_BaseWeapon* Weapon, USkeletalMeshComponent* CharacterMesh);
+
+	UFUNCTION(BlueprintCallable)
+	void DropCurrentWeapon();
+	
 	virtual void EquipWeapon(AGP_BaseWeapon* Weapon) override;
 };

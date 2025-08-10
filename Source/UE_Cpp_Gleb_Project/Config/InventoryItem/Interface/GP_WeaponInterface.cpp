@@ -6,3 +6,4 @@
 void IGP_WeaponInterface::EquipWeapon(AGP_BaseWeapon* Weapon)
 {
 }
+

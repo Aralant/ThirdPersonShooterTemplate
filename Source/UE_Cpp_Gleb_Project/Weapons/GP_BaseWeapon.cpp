@@ -140,7 +140,7 @@ void AGP_BaseWeapon::AttachToActor(AActor* Actor)
 		WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		UE_LOG(LogTemp, Warning, TEXT("Оружие подобрано"));
+		UE_LOG(LogTemp, Warning, TEXT("Weapon picked up"));
 	}
 }
 
@@ -158,7 +158,7 @@ void AGP_BaseWeapon::DropWeapon()
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_WorldDynamic);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
-	UE_LOG(LogTemp, Warning, TEXT("Оружие сброшено"));
+	UE_LOG(LogTemp, Warning, TEXT("Weapon dropped"));
 }
 
 void AGP_BaseWeapon::TryToAttach(AActor* InteractActor)

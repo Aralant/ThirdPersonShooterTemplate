@@ -207,6 +207,19 @@ void AGP_ThirdPersonCharacter::EquipMeleeWeapon(AGP_BaseWeapon* Weapon, USkeleta
 	}
 }
 
+void AGP_ThirdPersonCharacter::DropCurrentWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		WeaponSlotMap[CurrentWeapon->GetWeaponSlot()] =  false;
+		CurrentWeapon->DropWeapon();
+		CurrentWeapon = nullptr;
+	}
+}
+
+
+
 void AGP_ThirdPersonCharacter::EquipWeapon(AGP_BaseWeapon* Weapon)
 {
 	if (Weapon)
