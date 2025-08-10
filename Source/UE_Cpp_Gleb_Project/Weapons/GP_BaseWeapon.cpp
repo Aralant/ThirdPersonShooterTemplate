@@ -20,6 +20,7 @@ AGP_BaseWeapon::AGP_BaseWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
+	WeaponMesh->SetMaterial(0, BaseMaterial);
 
 	WeaponPickUpComponent = CreateDefaultSubobject<UInteractableSphereComponent>(TEXT("PickupSphere"));
 	WeaponPickUpComponent->SetupAttachment(RootComponent);
@@ -35,7 +36,8 @@ void AGP_BaseWeapon::ShowChangeWidget(AActor* Interactor)
 		if (Cast<AGP_ThirdPersonCharacter>(Interactor))
 		{
 			AGP_ThirdPersonCharacter* PlayerCharacter = Cast<AGP_ThirdPersonCharacter>(Interactor);
-			UGP_ChangeWeaponWidget* ChangeWidget = CreateWidget<UGP_ChangeWeaponWidget>(GetWorld(), WeaponPickUpComponent->OverlapWidgetClass);
+			UGP_ChangeWeaponWidget* ChangeWidget = CreateWidget<UGP_ChangeWeaponWidget>(
+				GetWorld(), WeaponPickUpComponent->OverlapWidgetClass);
 			if (PlayerCharacter->GetCurrentWeapon())
 			{
 				ChangeWidget->WeaponInHandWidget->Weapon = PlayerCharacter->GetCurrentWeapon();
@@ -65,6 +67,7 @@ void AGP_BaseWeapon::BeginPlay()
 	WeaponPickUpComponent->OnHovered.AddDynamic(this, &AGP_BaseWeapon::ShowChangeWidget);
 	WeaponPickUpComponent->OnUnhovered.AddDynamic(this, &AGP_BaseWeapon::HiddenWeaponChangeWidget);
 	WeaponPickUpComponent->OnInteractAction.AddDynamic(this, &AGP_BaseWeapon::TryToAttach);
+	WeaponPickUpComponent->OnCanInteract.AddDynamic(this, &AGP_BaseWeapon::CanInteract);
 }
 
 void AGP_BaseWeapon::OnPrimaryActionStarted()
@@ -104,7 +107,8 @@ void AGP_BaseWeapon::PrimaryAction(bool bIsStarted)
 	{
 		if (FireRate > 0.f)
 		{
-			GetWorld()->GetTimerManager().SetTimer(AutofireTimerHandle, this, &AGP_BaseWeapon::PrimaryActionInternal,FireRate, bIsAutoFire);
+			GetWorld()->GetTimerManager().SetTimer(AutofireTimerHandle, this, &AGP_BaseWeapon::PrimaryActionInternal,
+			                                       FireRate, bIsAutoFire);
 		}
 		PrimaryActionInternal();
 		OnPrimaryActionStarted();
@@ -138,7 +142,6 @@ void AGP_BaseWeapon::AttachToActor(AActor* Actor)
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		UE_LOG(LogTemp, Warning, TEXT("Оружие подобрано"));
 	}
-
 }
 
 void AGP_BaseWeapon::DropWeapon()
@@ -151,7 +154,7 @@ void AGP_BaseWeapon::DropWeapon()
 	WeaponPickUpComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	WeaponPickUpComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	WeaponPickUpComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
-	
+
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_WorldDynamic);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
@@ -173,13 +176,26 @@ void AGP_BaseWeapon::TryToAttach(AActor* InteractActor)
 	}
 }
 
+void AGP_BaseWeapon::CanInteract(bool bCanInteract)
+{
+	if (bCanInteract)
+	{
+		WeaponMesh->SetMaterial(0, CanInteractMaterial);
+	}
+	else
+	{
+		WeaponMesh->SetMaterial(0, BaseMaterial);
+	}
+}
+
 void AGP_BaseWeapon::PrimaryActionInternal()
 {
 	if (IsReadyForNextAttack())
 	{
 		PromotePrimaryAction();
 		FTimerHandle ReadyForNextAttackTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(ReadyForNextAttackTimerHandle,[this](){bIsReadyForNextAttack = true;}, FireRate - 0.001f, false);
+		GetWorld()->GetTimerManager().SetTimer(ReadyForNextAttackTimerHandle,
+		                                       [this]() { bIsReadyForNextAttack = true; }, FireRate - 0.001f, false);
 		bIsReadyForNextAttack = false;
 	}
 }
@@ -188,4 +204,3 @@ bool AGP_BaseWeapon::IsReadyForNextAttack()
 {
 	return bIsReadyForNextAttack && CanAttack();
 }
-

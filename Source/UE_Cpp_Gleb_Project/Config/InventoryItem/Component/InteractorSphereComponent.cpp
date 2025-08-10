@@ -66,7 +66,8 @@ void UInteractorSphereComponent::GetNearestInteractItem(
 			if (ViewAngle > NearestVectorToView)
 			{
 				NearestVectorToView = ViewAngle;
-				NewNearestActor = Cast<AGP_InteractableActor>(ComponentOwner);
+				NewNearestActor = ComponentOwner;
+				NewInteractableSphereComp =  Component;
 			}
 		}
 	}
@@ -93,24 +94,33 @@ void UInteractorSphereComponent::CheckInteractableObjectNearCharacter()
 				InteractableActorOverlappingComps.AddUnique(InteractableSphereComp);
 			}*/
 		}
-		GetNearestInteractItem(InteractableActorOverlappingComps); //сделать возсвартной AGP_InteractableActor*
-		if (NearestActor)
+		GetNearestInteractItem(InteractableActorOverlappingComps);
+		
+		if (CurrentInteractableSphereComp)
 		{
-			if (NewNearestActor && NearestActor != NewNearestActor)
+			if (NewInteractableSphereComp && CurrentInteractableSphereComp != NewInteractableSphereComp)
 			{
-				NearestActor->CanInteract(false);
-				NearestActor = NewNearestActor;
-				NearestActor->CanInteract(true);
-				NewNearestActor = nullptr;
+				if (NewInteractableSphereComp->Implements<UGP_Interact>() && CurrentInteractableSphereComp->Implements<UGP_Interact>())
+				{
+					IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, false);
+					CurrentInteractableSphereComp = NewInteractableSphereComp;
+					IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, true);
+					NewInteractableSphereComp = nullptr;
+				}
+				
 			}
 		}
 		else
 		{
-			if (NewNearestActor && NearestActor != NewNearestActor)
+			if (NewInteractableSphereComp && CurrentInteractableSphereComp != NewInteractableSphereComp)
 			{
-				NearestActor =  NewNearestActor;
-				NearestActor->CanInteract(true);
-				NewNearestActor = nullptr;
+				if (NewInteractableSphereComp->Implements<UGP_Interact>())
+				{
+					CurrentInteractableSphereComp =  NewInteractableSphereComp;
+					IGP_Interact::Execute_OnCanInteract(NewInteractableSphereComp, true);
+					NewInteractableSphereComp = nullptr;
+				}
+				
 			}
 		}
 		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, TEXT(""));

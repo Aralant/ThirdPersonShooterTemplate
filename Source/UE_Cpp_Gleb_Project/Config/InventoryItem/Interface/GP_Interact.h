@@ -32,4 +32,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	bool OnInteract(AActor* InteractBy);
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool OnCanInteract(bool bCanInteract);
 };

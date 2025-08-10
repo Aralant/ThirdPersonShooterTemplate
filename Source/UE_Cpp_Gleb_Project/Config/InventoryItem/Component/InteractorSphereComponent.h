@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InteractableSphereComponent.h"
 #include "Components/SphereComponent.h"
+#include "UE_Cpp_Gleb_Project/Weapons/GP_BaseWeapon.h"
 #include "InteractorSphereComponent.generated.h"
 
 
@@ -18,9 +19,14 @@ class UE_CPP_GLEB_PROJECT_API UInteractorSphereComponent : public USphereCompone
 	UPROPERTY()
 	UPrimitiveComponent* HoveredComponent = nullptr;
 	UPROPERTY()
-	AGP_InteractableActor* NearestActor = nullptr;
+	AActor* NearestActor = nullptr;
 	UPROPERTY()
-	AGP_InteractableActor* NewNearestActor = nullptr;
+	AActor* NewNearestActor = nullptr;
+
+	UPROPERTY()
+	UActorComponent* CurrentInteractableSphereComp = nullptr;
+	UPROPERTY()
+	UActorComponent* NewInteractableSphereComp = nullptr;
 public:
 	// Sets default values for this component's properties
 	UInteractorSphereComponent();

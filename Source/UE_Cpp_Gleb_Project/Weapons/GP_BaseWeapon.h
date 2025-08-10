@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UE_Cpp_Gleb_Project/Blueprints/GP_InteractableActor.h"
 #include "UE_Cpp_Gleb_Project/Config/InventoryItem/Interface/GP_WeaponInterface.h"
 #include "UE_Cpp_Gleb_Project/GlobalResource/GlobalResource.h"
 #include "GP_BaseWeapon.generated.h"
@@ -23,11 +24,13 @@ public:
 	// Sets default values for this actor's properties
 	AGP_BaseWeapon();
 
-protected:UFUNCTION()
+protected:
+	UFUNCTION()
 	void ShowChangeWidget(AActor* Interactor);
 	
 	UFUNCTION()
 	void HiddenWeaponChangeWidget(AActor* Interactor);
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -54,6 +57,12 @@ protected:UFUNCTION()
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon characteristics")
 	bool bIsAutoFire =  false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon characteristics")
+	UMaterialInterface* CanInteractMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon characteristics")
+	UMaterialInterface* BaseMaterial;
 	
 	UPROPERTY()
 	bool bIsReadyForNextAttack =  true;
@@ -105,9 +114,13 @@ public:
 	void TryToAttach(AActor* InteractActor);
 
 	UFUNCTION()
+	void CanInteract(bool bCanInteract);
+
+	UFUNCTION()
 	void SetWeaponSlot(EWeaponSlot NewSlot){WeaponSlot =  NewSlot;};
 	
 	FOnWeaponPickUp OnWeaponPickUp;
+
 private:
 	UFUNCTION()
 	virtual void PrimaryActionInternal();
