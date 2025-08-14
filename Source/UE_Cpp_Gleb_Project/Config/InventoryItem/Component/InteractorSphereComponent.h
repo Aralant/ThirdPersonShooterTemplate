@@ -25,8 +25,8 @@ class UE_CPP_GLEB_PROJECT_API UInteractorSphereComponent : public USphereCompone
 
 	UPROPERTY()
 	UActorComponent* CurrentInteractableSphereComp = nullptr;
-	UPROPERTY()
-	UActorComponent* NewInteractableSphereComp = nullptr;
+	//UPROPERTY()
+	//UActorComponent* NewInteractableSphereComp = nullptr;
 public:
 	// Sets default values for this component's properties
 	UInteractorSphereComponent();
@@ -38,7 +38,9 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetControllerForwardVector();
-	void GetNearestInteractItem(TArray<UPrimitiveComponent*> InteractableActorComponent);
+
+	UFUNCTION(BlueprintCallable)
+	UActorComponent* GetNearestInteractItem(TArray<UPrimitiveComponent*> InteractableActorComponent);
 	UFUNCTION(BlueprintCallable)
 	void CheckInteractableObjectNearCharacter();
 	// Called every frame

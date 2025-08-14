@@ -31,23 +31,19 @@ AGP_BaseWeapon::AGP_BaseWeapon()
 
 void AGP_BaseWeapon::ShowChangeWidget(AActor* Interactor)
 {
-	if (Interactor && WeaponPickUpComponent->OverlapWidgetClass)
+	if (Interactor && Interactor->Implements<UGP_WeaponInterface>() && WeaponPickUpComponent->OverlapWidgetClass)
 	{
-		if (Cast<AGP_ThirdPersonCharacter>(Interactor))
-		{
-			AGP_ThirdPersonCharacter* PlayerCharacter = Cast<AGP_ThirdPersonCharacter>(Interactor);
 			UGP_ChangeWeaponWidget* ChangeWidget = CreateWidget<UGP_ChangeWeaponWidget>(
 				GetWorld(), WeaponPickUpComponent->OverlapWidgetClass);
-			if (PlayerCharacter->GetCurrentWeapon())
+			if (AGP_BaseWeapon* CurrentWeapon = IGP_WeaponInterface::Execute_GetCurrentWeapon(Interactor))
 			{
-				ChangeWidget->WeaponInHandWidget->Weapon = PlayerCharacter->GetCurrentWeapon();
+				ChangeWidget->WeaponInHandWidget->Weapon = CurrentWeapon;
 				ChangeWidget->WeaponInHandWidget->SynchronizeProperties();
 			}
 			ChangeWidget->WeaponOnWorldWidget->Weapon = this;
 			ChangeWidget->WeaponOnWorldWidget->SynchronizeProperties();
 			ChangeWidget->AddToViewport();
 			WeaponPickUpComponent->OverlapWidget = ChangeWidget;
-		}
 	}
 }
 
@@ -176,15 +172,26 @@ void AGP_BaseWeapon::TryToAttach(AActor* InteractActor)
 	}
 }
 
-void AGP_BaseWeapon::CanInteract(bool bCanInteract)
+void AGP_BaseWeapon::HideChangeWidget()
+{
+	if (WeaponPickUpComponent->OverlapWidget)
+	{
+		WeaponPickUpComponent->OverlapWidget->RemoveFromParent();
+		WeaponPickUpComponent->OverlapWidget = nullptr;
+	}
+}
+
+void AGP_BaseWeapon::CanInteract(bool bCanInteract, AActor* Interactor)
 {
 	if (bCanInteract)
 	{
 		WeaponMesh->SetMaterial(0, CanInteractMaterial);
+		ShowChangeWidget(Interactor);
 	}
 	else
 	{
 		WeaponMesh->SetMaterial(0, BaseMaterial);
+		HideChangeWidget();
 	}
 }
 

@@ -56,9 +56,9 @@ bool UInteractableSphereComponent::OnInteract_Implementation(AActor* InteractBy)
 	return true;
 }
 
-bool UInteractableSphereComponent::OnCanInteract_Implementation(bool bCanInteract)
+bool UInteractableSphereComponent::OnCanInteract_Implementation(bool bCanInteract, AActor* InteractBy)
 {
-	OnCanInteract.Broadcast(bCanInteract);
+	OnCanInteract.Broadcast(bCanInteract, InteractBy);
 	return true;
 }
 

@@ -23,4 +23,7 @@ class UE_CPP_GLEB_PROJECT_API IGP_WeaponInterface
 public:
 	
 	virtual void EquipWeapon(AGP_BaseWeapon* Weapon);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AGP_BaseWeapon* GetCurrentWeapon() const; 
 };

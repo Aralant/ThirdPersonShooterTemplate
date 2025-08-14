@@ -7,3 +7,8 @@ void IGP_WeaponInterface::EquipWeapon(AGP_BaseWeapon* Weapon)
 {
 }
 
+/*AGP_BaseWeapon* IGP_WeaponInterface::GetMyWeapon_Implementation() const
+{
+	return nullptr;
+}*/
+

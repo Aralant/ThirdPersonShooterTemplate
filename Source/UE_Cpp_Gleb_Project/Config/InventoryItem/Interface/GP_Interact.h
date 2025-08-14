@@ -34,5 +34,5 @@ public:
 	bool OnInteract(AActor* InteractBy);
 
 	UFUNCTION(BlueprintNativeEvent)
-	bool OnCanInteract(bool bCanInteract);
+	bool OnCanInteract(bool bCanInteract, AActor* InteractBy);
 };

@@ -261,3 +261,7 @@ void AGP_ThirdPersonCharacter::EquipWeapon(AGP_BaseWeapon* Weapon)
 	}
 }
 
+AGP_BaseWeapon* AGP_ThirdPersonCharacter::GetCurrentWeapon_Implementation() const
+{
+	return CurrentWeapon;
+}

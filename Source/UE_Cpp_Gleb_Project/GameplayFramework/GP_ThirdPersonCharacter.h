@@ -69,8 +69,8 @@ public:
 
 	bool InteractWithInventory(AActor* InteractActor);
 
-	UFUNCTION(BlueprintPure)
-	AGP_BaseWeapon* GetCurrentWeapon() const {return CurrentWeapon;};
+	/*UFUNCTION(BlueprintPure)
+	AGP_BaseWeapon* GetCurrentWeapon() const {return CurrentWeapon;};*/
 	
 	UFUNCTION(BlueprintPure)
 	AGP_BaseWeapon* GetPrimaryWeapon() const {return PrimaryWeapon;};
@@ -109,4 +109,6 @@ public:
 	void DropCurrentWeapon();
 	
 	virtual void EquipWeapon(AGP_BaseWeapon* Weapon) override;
+	
+	AGP_BaseWeapon* GetCurrentWeapon_Implementation() const override;
 };

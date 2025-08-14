@@ -115,7 +115,10 @@ public:
 	void TryToAttach(AActor* InteractActor);
 
 	UFUNCTION()
-	void CanInteract(bool bCanInteract);
+	void HideChangeWidget();
+	
+	UFUNCTION()
+	void CanInteract(bool bCanInteract, AActor* Interactor);
 
 	UFUNCTION()
 	void SetWeaponSlot(EWeaponSlot NewSlot){WeaponSlot =  NewSlot;};

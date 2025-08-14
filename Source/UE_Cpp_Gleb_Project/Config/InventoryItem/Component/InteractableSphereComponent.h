@@ -8,7 +8,7 @@
 #include "InteractableSphereComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractAction, AActor*, Interactor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanInteractAction, bool, bCanInteract);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCanInteractAction, bool, bCanInteract, AActor*, Interactor);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class UE_CPP_GLEB_PROJECT_API UInteractableSphereComponent : public USphereComponent, public IGP_Interact
@@ -44,5 +44,5 @@ public:
 	bool OnHovered_Implementation(AActor* HoveredBy);
 	bool OnUnhovered_Implementation(AActor* UnhoveredBy);
 	bool OnInteract_Implementation(AActor* InteractBy);
-	bool OnCanInteract_Implementation(bool bCanInteract);
+	bool OnCanInteract_Implementation(bool bCanInteract, AActor* InteractBy);
 };

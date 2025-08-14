@@ -49,9 +49,10 @@ FVector UInteractorSphereComponent::GetControllerForwardVector()
 }
 
 
-void UInteractorSphereComponent::GetNearestInteractItem(
+UActorComponent* UInteractorSphereComponent::GetNearestInteractItem(
 	TArray<UPrimitiveComponent*> InteractableActorComponents)
 {
+	UActorComponent* NewInteractableSphereComp = nullptr;
 	float NearestVectorToView = 0.5f;
 	for (auto& Component : InteractableActorComponents)
 	{
@@ -66,11 +67,11 @@ void UInteractorSphereComponent::GetNearestInteractItem(
 			if (ViewAngle > NearestVectorToView)
 			{
 				NearestVectorToView = ViewAngle;
-				NewNearestActor = ComponentOwner;
 				NewInteractableSphereComp =  Component;
 			}
 		}
 	}
+	return NewInteractableSphereComp;
 }
 
 void UInteractorSphereComponent::CheckInteractableObjectNearCharacter()
@@ -79,7 +80,6 @@ void UInteractorSphereComponent::CheckInteractableObjectNearCharacter()
 	if (GetControllerForwardVector().Length() > 0.0f)
 	{
 		TArray<UPrimitiveComponent*> OverlappingComps;
-		//TArray<UInteractableSphereComponent*> InteractableActorOverlappingComps;
 		TArray<UPrimitiveComponent*> InteractableActorOverlappingComps;
 		GetOverlappingComponents(OverlappingComps);
 		for (auto& OverlappingComp : OverlappingComps)
@@ -89,41 +89,22 @@ void UInteractorSphereComponent::CheckInteractableObjectNearCharacter()
 			{
 				InteractableActorOverlappingComps.AddUnique(InteractableSphereComp);
 			}
-		/*	if (InteractableSphereComp)
-			{
-				InteractableActorOverlappingComps.AddUnique(InteractableSphereComp);
-			}*/
 		}
-		GetNearestInteractItem(InteractableActorOverlappingComps);
+		UActorComponent* PossibleInteractable = GetNearestInteractItem(InteractableActorOverlappingComps);
 		
-		if (CurrentInteractableSphereComp)
+		if (CurrentInteractableSphereComp != PossibleInteractable)
 		{
-			if (NewInteractableSphereComp && CurrentInteractableSphereComp != NewInteractableSphereComp)
+			if (CurrentInteractableSphereComp)
 			{
-				if (NewInteractableSphereComp->Implements<UGP_Interact>() && CurrentInteractableSphereComp->Implements<UGP_Interact>())
-				{
-					IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, false);
-					CurrentInteractableSphereComp = NewInteractableSphereComp;
-					IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, true);
-					NewInteractableSphereComp = nullptr;
-				}
-				
+				IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, false, GetOwner());
+				CurrentInteractableSphereComp = nullptr;
+			}
+			if (PossibleInteractable)
+			{
+				CurrentInteractableSphereComp = PossibleInteractable;
+				IGP_Interact::Execute_OnCanInteract(CurrentInteractableSphereComp, true, GetOwner());
 			}
 		}
-		else
-		{
-			if (NewInteractableSphereComp && CurrentInteractableSphereComp != NewInteractableSphereComp)
-			{
-				if (NewInteractableSphereComp->Implements<UGP_Interact>())
-				{
-					CurrentInteractableSphereComp =  NewInteractableSphereComp;
-					IGP_Interact::Execute_OnCanInteract(NewInteractableSphereComp, true);
-					NewInteractableSphereComp = nullptr;
-				}
-				
-			}
-		}
-		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, TEXT(""));
 	}
 }
 
